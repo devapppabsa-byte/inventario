@@ -1,0 +1,228 @@
+@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Lilita+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Rowdies:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap');
+
+.cascadia {
+  font-family: "Cascadia Mono", monospace;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.comentario_user {
+  background-color: aliceblue;
+}
+
+.comentario_user:focus {
+  background-color: #ece8e8;
+  font-family: "Cascadia Mono", monospace;
+}
+
+.publi {
+  text-decoration: none;
+}
+
+#play, #pause {
+  font-size: 18px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin: 5px;
+}
+
+#pause { display: none; }
+
+.flotante {
+  position: fixed;
+  bottom: 45px;
+  left: 90px;
+  background-color: #000000;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease;
+  z-index: 1050;
+}
+
+.flotante:hover {
+  background-color: #2f2f2f;
+  color: rgb(214, 214, 214);
+}
+
+.titulo-post {
+  font-family: "Luckiest Guy", serif;
+}
+
+.ql-editor img {
+  width: 100%;
+  height: auto;
+}
+
+.titulo_publicaciones {
+  font-family: "Righteous", Arial, Helvetica, sans-serif;
+  font-size: 40px;
+}
+
+.font-arimo {
+  font-family: "Arimo", serif;
+}
+
+.font-maker {
+  font-family: "Bebas Neue", serif;
+}
+
+.titulos {
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 40px;
+  margin: auto;
+}
+
+.custom-input-file {
+  background-color: #0d4930;
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 auto 0;
+  min-height: 15px;
+  overflow: hidden;
+  padding: 10px;
+  position: relative;
+  text-align: center;
+  width: 300px;
+}
+
+.custom-input-file .input-file {
+  border: 10000px solid transparent;
+  cursor: pointer;
+  font-size: 10000px;
+  margin: 0;
+  opacity: 0;
+  outline: 0 none;
+  padding: 0;
+  position: absolute;
+  right: -1000px;
+  top: -1000px;
+}
+
+a {
+  text-decoration: none;
+  color: gray;
+}
+
+a:hover {
+  color: black;
+}
+
+.negro {
+  color: rgb(0, 0, 0);
+}
+
+.zoom_seguridad_info {
+  transition: transform .5s ease;
+}
+
+.zoom_seguridad_info:hover {
+  transform: scale(1.05);
+}
+
+.zoom_menu {
+  position: relative;
+  transition: transform 0.4s ease;
+}
+
+.zoom_menu:hover {
+  transform: scale(1.2);
+}
+
+.tabla-usuarios-scroll {
+  max-height: 800px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.reportes-scroll {
+  max-height: 500px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.scroll-tabla {
+  max-height: 400px;
+  padding: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.menu-contextual {
+  display: none;
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 200px;
+}
+
+.menu-contextual ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 5px 0;
+}
+
+.menu-contextual ul li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.menu-contextual ul li:hover {
+  background-color: #f0f0f0;
+}
+
+.font-size-18 {
+  font-size: 18px;
+}
+
+.suave {
+  background-color: rgba(231, 227, 227, 0.8);
+  border: none;
+  padding: 10px;
+  resize: vertical;
+}
+
+.table td, .table th {
+  padding: 0.70rem;
+}
+
+.color-swatch {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+}
+
+.swatch-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid #dee2e6;
+  margin: 0 auto 4px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.color-swatch input:checked + .swatch-circle {
+  border-color: #198754;
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.25);
+}

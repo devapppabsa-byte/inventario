@@ -1,0 +1,33 @@
+--------------------- The DATABASE --------------------------
+
+********* PC *********
+-> area
+-> marca
+-> modelo
+-> serie
+-> observaciones
+-> imagen1
+-> imagen2
+-> imagen3
+
+
+********* Printer *********
+-> area
+-> marca
+-> modelo
+-> tipo
+-> serie
+-> observaciones
+-> imagen1
+-> imagen2
+
+
+******* UPS ************
+-> area
+-> marca
+-> modelo
+-> serie
+-> observaciones
+-> imagen1
+-> imagen2
+-> imagen3
