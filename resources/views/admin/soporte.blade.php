@@ -16,6 +16,7 @@
                         <th>Dispositivo</th>
                         <th>Descripción</th>
                         <th>Estado</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,10 +33,15 @@
                                     <span class="badge bg-danger">Pendiente</span>
                                 @endif
                             </td>
+                            <td class="text-center">
+                                <a href="{{route('detalle.reporte.admin', $reporte->id)}}" class="btn btn-dark btn-sm">
+                                    <i class="fa fa-eye me-1"></i> Seguimiento
+                                </a>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">
+                            <td colspan="6" class="text-center py-5 text-muted">
                                 <i class="fa fa-check-circle fa-3x mb-3"></i><br>
                                 No hay solicitudes de soporte
                             </td>
