@@ -41,7 +41,11 @@ return [
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
-            'timeout' => null,
+            // Sin esto Swift cae al default_socket_timeout de PHP, que es de
+            // 60s: un SMTP colgado congelaba la peticion un minuto entero,
+            // justo despues de que el reporte ya quedo guardado. 15s alcanza
+            // de sobra para el handshake de Gmail y corta el error a tiempo.
+            'timeout' => env('MAIL_SMTP_TIMEOUT', 15),
             'auth_mode' => null,
         ],
 

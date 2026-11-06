@@ -13,6 +13,7 @@
     <div class="row p-5 justify-content-center">
         <div class="col-12 bg-white p-5">
           <h4 class="fw-bold mb-3">Computadoras</h4>
+            <div class="tabla-responsive">
             <table class="table">
                 <thead>
                   <tr>
@@ -27,12 +28,12 @@
                 <tbody>
                 @forelse ($computadoras as $computadora)
                   <tr>
-                    <th>{{$computadora->user->name}}</th>
-                    <td>{{$computadora->marca}}</td>
-                    <td>{{$computadora->modelo}}</td>
-                    <td>{{$computadora->ram}} GB</td>
-                    <td>{{$computadora->tipo}}</td>
-                    <td><a href="{{route('editar.computadora', $computadora->id)}}">Editar</a></td>
+                    <th data-label="Responsable">{{$computadora->user->name}}</th>
+                    <td data-label="Marca">{{$computadora->marca}}</td>
+                    <td data-label="Modelo">{{$computadora->modelo}}</td>
+                    <td data-label="Ram">{{$computadora->ram}} GB</td>
+                    <td data-label="Tipo">{{$computadora->tipo}}</td>
+                    <td data-label="Editar"><a href="{{route('editar.computadora', $computadora->id)}}">Editar</a></td>
                   </tr>
     
                 @empty
@@ -41,6 +42,7 @@
 
                 </tbody>
               </table>
+            </div>
         </div>
     </div>
 </div>

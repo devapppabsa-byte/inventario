@@ -6,7 +6,7 @@
         <div class="col-sm-8 col-md-6 col-lg-3 mt-5 border border-3 bg-white p-4">
          <form action="{{route('ingreso.admin')}}" method="POST" id="login">
             @csrf
-            <h3>Login</h3>
+            <h3>Inicio de Sesión</h3>
             @if (session('error'))
                 <span class="text-danger fw-bold">{{session('error')}}</span>
             @endif
@@ -14,6 +14,9 @@
             <div class="mb-3 m-0">
                 <label for="email" class="m-0 p-0">Usuario</label>
                 <input type="text"   name="email" class="form-control" id="email" >
+            </div>
+
+            <div class="mb-3 m-0">
 
             </div>
 
@@ -22,13 +25,17 @@
                 <input type="password" name="password" id="password" class="form-control">
             </div>
 
+
+
             <div class="mb-3 m-0 mt-3">
                 <label for="" class="m-0 p-0">Tipo de usuario:</label>
                 <select class="form-control" name="tipo" id="">
                     <option value="usuario" >Usuario</option>
                     <option value="administrador" >Administrador</option>
+                    <option value="soporte" >Agente de Soporte</option>
                     {{-- <option value="autoriza" >Autorizar Tintas</option> --}}
                 </select>
+
             </div>
 
             <div class="mb-3 m-0 mt-3">
@@ -43,16 +50,9 @@
 
 
 
-<script>
-   document.getElementById('login').addEventListener('submit', function(){
-    let boton = document.getElementById('boton');
-    boton.disabled = true;
-    boton.style.cursor = "not-allowed";
-    boton.style.opacity = "0.6";
-})
-</script>
 
 @endsection
+
 
 @section('scripts')
 <script>
@@ -62,4 +62,16 @@
     gsap.from('.mb-3', { opacity: 0, y: 15, duration: 0.4, stagger: 0.1, delay: 0.4, ease: 'power2.out' });
   });
 </script>
+
+<script>
+   document.getElementById('login').addEventListener('submit', function(){
+    let boton = document.getElementById('boton');
+    boton.disabled = true;
+    boton.style.cursor = "not-allowed";
+    boton.style.opacity = "0.6";
+})
+</script>
+
+
+
 @endsection

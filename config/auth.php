@@ -50,6 +50,13 @@ return [
         'admin' =>[
             'driver' => 'session',
             'provider' => 'admins'
+        ],
+
+        // Los agentes de soporte entran por su propio guard: sin sesion en
+        // 'admin' no pueden entrar a las rutas auth:admin del panel.
+        'soporte' => [
+            'driver' => 'session',
+            'provider' => 'soporte_agentes',
         ]
     ],
 
@@ -78,7 +85,11 @@ return [
         'admins' =>[
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class
-        ]
+        ],
+        'soporte_agentes' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\AgenteSoporte::class,
+        ],
 
         // 'users' => [
         //     'driver' => 'database',

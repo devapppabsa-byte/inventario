@@ -62,7 +62,7 @@
     <div class="modal fade" id="fo{{$pedido->id}}"  data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
-            <img src="{{str_replace('storage/Public/', 'storage/', Storage::url($pedido->foto_tintas))}}" class="img-fluid" alt="">
+            <img src="{{Storage::url($pedido->foto_tintas)}}" class="img-fluid" alt="">
           </div>
         </div>
     </div>

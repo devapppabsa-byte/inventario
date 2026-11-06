@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
 
 
 
-
         $usuario = new User();
         $usuario->name = "Arturo Resendiz";
         $usuario->email = "resendiz.galleta@gmail.com";
@@ -85,6 +84,8 @@ class DatabaseSeeder extends Seeder
 
 
 
+
+        $this->call(EncuestaProveedorTISeeder::class);
 
     }
 }

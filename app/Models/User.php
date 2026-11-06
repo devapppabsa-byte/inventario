@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Visita;
+use App\Models\Evaluacion;
+use App\Models\EvaluacionIntento;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -115,8 +117,15 @@ public function receivedMessages(){
 
 }
 
+public function evaluaciones(){
+    return $this->belongsToMany(Evaluacion::class, 'evaluacion_usuario', 'usuario_id', 'evaluacion_id')
+                ->withPivot('activo', 'secciones')
+                ->wherePivot('activo', true);
+}
 
-
+public function intentosEvaluacion(){
+    return $this->hasMany(EvaluacionIntento::class, 'usuario_id');
+}
 
 
 

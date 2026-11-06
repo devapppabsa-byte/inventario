@@ -6,20 +6,41 @@ use BD;
 use DB;
 use Carbon\Carbon;
 use App\Models\Pedido;
-use App\Models\EmailSetting;
-use App\Mail\PedidoTinta;
+use App\Models\CorreoEnvio;
+use App\Services\NotificadorCorreo;
+use App\Services\EntregaPedido;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 
 class tintasController extends Controller
 {
-    
+    /**
+     * Tope de la foto de evidencia, en kilobytes, que es la unidad que usa la
+     * regla `max:`. Vive aqui para que la regla, el mensaje de error y el
+     * letrero de la vista no puedan quedar desincronizados entre si, igual que
+     * hace ticketsController con su limitesAdjuntos().
+     *
+     * El maximo real lo impone la plataforma, no la app: Vercel rechaza con
+     * 413 cualquier cuerpo mayor a 4.5 MB. Antes se declaraban 20 MB, que no
+     * se podian alcanzar en ningun entorno. Las imagenes llegan reducidas
+     * desde el navegador, asi que 4 MB de sobra para una foto de evidencia.
+     */
+    public const MAX_FOTO_KB = 4096;
+
     public function show(){
 
-        $pedidos = Pedido::where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->simplePaginate(7);
+        $pedidos = Pedido::where('user_id', Auth::user()->id)->with('hijos')->orderBy('created_at', 'desc')->simplePaginate(7);
 
-        return view('user.perfil_tintas', compact('pedidos'));
+        $reenviables = CorreoEnvio::idsConUltimoFallo(
+            Pedido::class,
+            $pedidos->pluck('id')->all()
+        );
+
+        return view('user.perfil_tintas', [
+            'pedidos' => $pedidos,
+            'maxFotoMb' => round(self::MAX_FOTO_KB / 1024, 1),
+            'reenviables' => $reenviables,
+        ]);
 
 
     }
@@ -27,11 +48,15 @@ class tintasController extends Controller
     
     public function pedido(){
 
-
         request()->validate([
-            'foto_tintas' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120'
+            'foto_tintas' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:' . self::MAX_FOTO_KB . '|dimensions:min_width=300,min_height=300'
+        ], [
+            'foto_tintas.image'      => 'La foto debe ser una imagen. No se aceptan documentos ni archivos de otro tipo.',
+            'foto_tintas.mimes'      => 'La foto debe ser JPG, PNG, GIF o WEBP.',
+            'foto_tintas.max'        => 'La foto supera el maximo de ' . round(self::MAX_FOTO_KB / 1024, 1) . ' MB.',
+            'foto_tintas.dimensions' => 'La foto debe medir al menos 300×300 px.',
         ]);
-        $foto_tintas = request()->file('foto_tintas')->store('Public');
+        $foto_tintas = request()->file('foto_tintas')->store('public');
 
         
         if(request('numero') == 'Cintas'){
@@ -89,15 +114,13 @@ class tintasController extends Controller
         ]);
 
         $pedido = Pedido::where('user_id', Auth::user()->id)->latest()->first();
-        $setting = EmailSetting::obtener('tintas');
-        if ($setting && $pedido) {
-            $mail = Mail::to($setting->destinatario)
-                ->send(new PedidoTinta($pedido, $setting->mail_from, $setting->mail_from_name));
-            if (!empty($setting->cc)) {
-                $ccs = array_map('trim', explode(',', $setting->cc));
-                Mail::to($setting->destinatario)
-                    ->cc($ccs)
-                    ->send(new PedidoTinta($pedido, $setting->mail_from, $setting->mail_from_name));
+
+        // Igual que en soporte: el pedido ya esta guardado y el aviso a
+        // recepcion no puede convertir un fallo de red en un error de peticion.
+        if ($pedido) {
+            $envio = NotificadorCorreo::tinta($pedido);
+            if (! $envio['ok'] && $envio['intentos'] > 0) {
+                session()->flash('correo_fallido', $envio['error']);
             }
         }
 
@@ -105,6 +128,25 @@ class tintasController extends Controller
 
 
         
+    }
+
+    /**
+     * Reenvia el aviso de un pedido ya guardado. Solo puede hacerlo quien lo
+     * pidio, y un fallo de SMTP nunca se convierte en un 500: se audita y se avisa.
+     */
+    public function reenviar_pedido($id)
+    {
+        $pedido = Pedido::where('user_id', Auth::user()->id)
+            ->findOrFail($id);
+
+        $envio = NotificadorCorreo::tinta($pedido);
+
+        if (! $envio['ok']) {
+            session()->flash('correo_fallido', $envio['error'] ?: 'No se pudo contactar el servidor de correo.');
+            return back()->with('reenvio_fallido', 'El pedido sigue guardado, pero el aviso por correo falló.');
+        }
+
+        return back()->with('reenviado', 'El aviso fue reenviado correctamente.');
     }
 
 
@@ -130,13 +172,25 @@ class tintasController extends Controller
 
         $pedido = Pedido::findOrFail($id);
 
-        $pedido->fecha_entrega = substr(Carbon::now(), 0, 11);
-        $pedido->status = 'Completado';
+        // Solo el dueño puede completar su pedido. La vista lista los
+        // propios, pero la ruta acepta cualquier id.
+        abort_unless((int) $pedido->user_id === (int) Auth::id(), 403);
 
-        $pedido->update();
+        $r = EntregaPedido::marcar($pedido, request()->all(), Auth::user()->name);
 
+        if (isset($r['aviso'])) {
+            return back()->with('completado', $r['aviso']);
+        }
 
-        return back()->with('completado', 'Se marco el pedido como completado');
+        if (! $r['ok']) {
+            return back()->withErrors($r['errores'])->withInput();
+        }
+
+        if (isset($r['correo']) && ! $r['correo']['ok'] && $r['correo']['intentos'] > 0) {
+            session()->flash('correo_fallido', $r['correo']['error']);
+        }
+
+        return back()->with('completado', $r['mensaje']);
 
 
     }

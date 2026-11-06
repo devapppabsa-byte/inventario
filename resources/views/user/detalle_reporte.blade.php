@@ -53,7 +53,7 @@ use Carbon\Carbon;
     
                         <div class="col-12 m-2">
                             <b>Descripción: </b> <br>
-                            <i>{{$reporte->descripcion}}.</i>
+                            @include('partials._descripcion_enriquecida', ['descripcion' => $reporte->descripcion])
                         </div>
     
                         <div class="col-12 m-2">
@@ -65,8 +65,26 @@ use Carbon\Carbon;
                             <b>Prioridad: </b> <br>
                             <i>{{$reporte->prioridad}}</i>
                         </div>
+
+                        @if ($reporte->status == 'completado')
+                            <div class="col-12 m-2">
+                                <b>Calificación: </b> <br>
+                                <span class="text-warning fs-5">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <i class="fa {{ $i <= ($reporte->calificacion ?? 0) ? 'fa-star' : 'fa-star-o' }}"></i>
+                                    @endfor
+                                </span>
+                                <small class="text-muted">({{$reporte->calificacion ?? 0}}/5)</small>
+                            </div>
+                            @if ($reporte->observaciones)
+                                <div class="col-12 m-2">
+                                    <b>Observaciones:</b> <br>
+                                    <i>{{$reporte->observaciones}}</i>
+                                </div>
+                            @endif
+                        @endif
                         <div class="col-12 mt-5">
-                            <img src="{{route('reporte.imagen', $reporte->id)}}"  data-bs-toggle="modal" data-bs-target="#img{{$reporte->id}}" class="img-fluid zoom" alt="">
+                            @include('partials._adjuntos_reporte', ['adjuntos' => $reporte->adjuntos])
                         </div>
 
 
@@ -122,14 +140,6 @@ use Carbon\Carbon;
 
 {{-- aqui esta el modal --}}
   <!-- Modal -->
-<div class="modal fade" id="img{{$reporte->id}}"  data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <img src="{{route('reporte.imagen', $reporte->id)}}" class="img-fluid" alt="">
-          </div>
-    </div>
-</div>
-
 
     
 @endsection

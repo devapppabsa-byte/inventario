@@ -28,7 +28,7 @@
 <div class="container bg-white  p-2 ">
 
   <!-- encabezado -->
-  <div class="container px-5 py-2 m-3 ">
+  <div class="container px-3 px-md-5 py-2 m-0 m-md-3">
     <div class="row border border-5 justify-content-center">
       
       <div class="col-sm-12 col-md-4  col-lg-4 centrar-verticalmente p-2 mt-2">
@@ -111,6 +111,7 @@
             @if (session('software_desautorizado'))
             <h5 class="text-center text-danger fw-bold">{{session('software_desautorizado')}}</h5>
         @endif
+            <div class="tabla-responsive">
             <table class="table border">
               @if (!empty($software[0]))
 
@@ -129,10 +130,10 @@
                     @forelse ($software as $soft)
 
                     <tr>
-                      <th class="col-2" >{{$soft->nombre}}</th>
-                      <td class="col-6"> {{$soft->justificacion}}</td>
-                      <td class="col-2"> {{$soft->status  ? 'Autorizado' : 'No Autorizado' }}</td>
-                      <td class="col-2">
+                      <th data-label="Software" class="col-2">{{$soft->nombre}}</th>
+                      <td data-label="Justificación" class="col-6"> {{$soft->justificacion}}</td>
+                      <td data-label="Estado" class="col-2"> {{$soft->status  ? 'Autorizado' : 'No Autorizado' }}</td>
+                      <td data-label="Autorizar" class="col-2">
                         <div class="btn-group">
                           <form action="{{route('autorizar.software', $soft->id)}}" method="POST">
                             @csrf @method('PATCH')                            
@@ -158,6 +159,7 @@
   
                 </tbody>
               </table>
+            </div>
         </div>
     </div>
 
@@ -179,6 +181,7 @@
               {{session('sitio_desautorizado')}}
             </h5>
         @endif
+            <div class="tabla-responsive">
             <table class="table border">
               @if (!empty($sitios[0]))
 
@@ -197,10 +200,10 @@
                 
                 @forelse ($sitios as $sitio)
                     <tr>
-                        <th class="col-2">{{$sitio->nombre}}</th>
-                        <td class="col-6">{{$sitio->justificacion}}</td>
-                        <td class="col-2">{{$sitio->status ? 'Autorizado' : 'No Autorizado'}}</td>
-                        <td class="col-2">
+                        <th data-label="Sitio" class="col-2">{{$sitio->nombre}}</th>
+                        <td data-label="Justificación" class="col-6">{{$sitio->justificacion}}</td>
+                        <td data-label="Estado" class="col-2">{{$sitio->status ? 'Autorizado' : 'No Autorizado'}}</td>
+                        <td data-label="Autorizar" class="col-2">
                           <div class="btn-group">
                             <form action="{{route('autorizar.sitio', $sitio->id)}}" method="POST">
                               @csrf @method('PATCH')
@@ -224,6 +227,7 @@
 
                 </tbody>
               </table>
+            </div>
         </div>
     </div>    
 

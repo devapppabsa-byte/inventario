@@ -35,7 +35,7 @@
 <div class="container bg-white  p-2" id="content">
 
   <!-- encabezado -->
-  <div class="container px-5 py-2 m-3 ">
+  <div class="container px-3 px-md-5 py-2 m-0 m-md-3">
     <div class="row border border-5 justify-content-center">
       
       <div class="col-sm-12 col-md-4  col-lg-4 centrar-verticalmente p-2 mt-2">
@@ -111,6 +111,7 @@
     <div class="row justify-content-center mt-5">
         <div class="col-11 ">
             <h4>Software requerido</h4>
+            <div class="tabla-responsive">
             <table class="table border" id="userTable">
                 <thead class="table-dark">
                   <tr>
@@ -124,10 +125,10 @@
                     @forelse ($software as $soft)
 
                     <tr>
-                      <th class="col-2" >{{$soft->nombre}}</th>
-                      <td class="col-6"> {{$soft->justificacion}} </td>
-                      <td class="col-2"> {{$soft->status ? 'Autorizado' : 'No autorizado' }} </td>
-                      <td class="col-2"> 
+                      <th data-label="Software" class="col-2">{{$soft->nombre}}</th>
+                      <td data-label="Justificación" class="col-6"> {{$soft->justificacion}} </td>
+                      <td data-label="Estado" class="col-2"> {{$soft->status ? 'Autorizado' : 'No autorizado' }} </td>
+                      <td data-label="Eliminar" class="col-2">
                         <form action="{{route('eliminar.acceso', $soft->id)}}" method="POST">
                           @csrf @method('DELETE')
                           <button class="btn btn-dark btn-sm">
@@ -143,7 +144,7 @@
 
                   <tr>
 
-                    <th scope="row d-flex items-align-center">
+                    <th class="sin-etiqueta" scope="row d-flex items-align-center">
                         <form id="software" action="{{route('peticion.software')}}" method="POST">
                             @csrf
                             <div class="mb-3 ">
@@ -153,7 +154,7 @@
                             </div>
                         </th>
 
-                        <td>
+                        <td class="sin-etiqueta">
                             <div class="mb-3 ">
                                 <label for="" class="fw-bold">Justificación: </label>
                                 <input type="text" name="justificacion_software" placeholder="Necesito Aspel SAE por que trabajo con los registros de la empresa" class="form-control w-100 h-25 suave mt-2" value="{{old('justificacion_software')}}">
@@ -161,7 +162,7 @@
                               </div>
                             </td>
                             
-                        <td>
+                        <td class="sin-etiqueta">
                               
                               <button class="btn btn-dark btn-sm w-100 mt-5" id="button1">Solicitar</button>
                           </form>
@@ -173,6 +174,7 @@
   
                 </tbody>
               </table>
+            </div>
         </div>
     </div>
 
@@ -184,6 +186,7 @@
     <div class="row justify-content-center mt-5 mb-5">
         <div class="col-11 ">
             <h4>Acceso a la web requerido</h4>
+            <div class="tabla-responsive">
             <table class="table border" id="sitioTable">
                 <thead class="table-dark">
                   <tr>
@@ -198,10 +201,10 @@
                 
                 @forelse ($sitios as $sitio)
                     <tr>
-                        <th class="col-2">{{$sitio->nombre}} </th>
-                        <td class="col-6" >{{$sitio->justificacion}}</td>
-                        <td class="col-2" >{{$sitio->status ? 'Autorizado'  :  'No Autorizado'}}</td>
-                        <td class="col-2"> 
+                        <th data-label="Sitio" class="col-2">{{$sitio->nombre}} </th>
+                        <td data-label="Justificación" class="col-6">{{$sitio->justificacion}}</td>
+                        <td data-label="Estado" class="col-2">{{$sitio->status ? 'Autorizado'  :  'No Autorizado'}}</td>
+                        <td data-label="Eliminar" class="col-2">
                           <form action="{{route('eliminar.acceso', $sitio->id)}}" method="POST">
                             @csrf @method('DELETE')
                             <button class="btn btn-dark btn-sm">
@@ -216,7 +219,7 @@
                 @endforelse
 
 
-                  <th scope="row d-flex items-align-center">
+                  <th class="sin-etiqueta" scope="row d-flex items-align-center">
                     <form action="{{route('peticion.sitio')}}" id="sitio" method="POST">
                         @csrf
                         <div class="mb-3 ">
@@ -226,7 +229,7 @@
                         </div>
                   </th>
                     
-                      <td>
+                      <td class="sin-etiqueta">
                         <div class="mb-3 ">
                             <label for="" class="fw-bold">Justificación: </label>
                             <input name="justificacion_sitio" placeholder="Consulto diariamente este sitio saber el tipo de cambio" class="form-control w-100 mt-2 h-25 suave" value="{{old('justificacion_sitio')}}""> 
@@ -234,7 +237,7 @@
                           </div>
                         </td>
                         
-                        <td>
+                        <td class="sin-etiqueta">
                           
                           <button class="btn btn-dark btn-sm mt-5 w-100" id="button2">Solicitar</button>
                         </form>
@@ -243,6 +246,7 @@
 
                 </tbody>
               </table>
+            </div>
         </div>
     </div>    
 

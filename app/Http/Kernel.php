@@ -37,12 +37,39 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            // Va al final del grupo web porque necesita la sesion ya iniciada
+            // para revisar si hay un agente de soporte conectado.
+            \App\Http\Middleware\RestringirAgenteSoporte::class,
         ],
 
         'api' => [
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
+    ];
+
+    /**
+     * Prioridad de ejecucion de los middleware.
+     *
+     * Es la lista por defecto de Laravel con RestringirAgenteSoporte metido
+     * entre StartSession y Authenticate: la lista blanca necesita la sesion ya
+     * iniciada, y a la vez debe decidir antes de que 'auth:admin' rechace una
+     * ruta, porque si no el agente caeria en un redirect sin explicación y
+     * conservaria la sesion viva.
+     *
+     * @var array
+     */
+    protected $middlewarePriority = [
+        \Illuminate\Cookie\Middleware\EncryptCookies::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \App\Http\Middleware\RestringirAgenteSoporte::class,
+        \Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+        \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        \Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class,
+        \Illuminate\Session\Middleware\AuthenticateSession::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        \Illuminate\Auth\Middleware\Authorize::class,
     ];
 
     /**

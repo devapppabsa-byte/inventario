@@ -38,7 +38,8 @@
           @if (session('sitio_desautorizado'))
             <div class="alert alert-secondary">{!!session('sitio_desautorizado')!!}</div>
           @endif
-            <table class="table table-bordered table-responsive-md">
+            <div class="tabla-responsive">
+            <table class="table table-bordered">
 
               @if (count($sitios) > 0)
                 <thead class="table-dark">
@@ -60,12 +61,12 @@
                   
               
               <tr>
-                    <td>{{$sitio->user->name}}</td>
-                    <td>{{$sitio->nombre}}</td>
-                    <td>{{$sitio->status ? 'Autorizado' : 'No autorizado'}}</td>
-                    <td>{{$sitio->justificacion}}</td> 
+                    <td data-label="Usuario">{{$sitio->user->name}}</td>
+                    <td data-label="Sitio Web">{{$sitio->nombre}}</td>
+                    <td data-label="Estado">{{$sitio->status ? 'Autorizado' : 'No autorizado'}}</td>
+                    <td data-label="Justificación">{{$sitio->justificacion}}</td>
                     
-                    <td class="col-2">
+                    <td data-label="Autorizar" class="col-2">
                       <div class="btn-group">
                         <form action="{{route('autorizar.sitio.jefe', $sitio->id)}}" method="POST">
                           @csrf @method('PATCH')                            
@@ -100,6 +101,7 @@
                 
               </tbody>
           </table>
+            </div>
         </div>   
         {{-- aqui termina le div de la tabla --}}
 
@@ -115,7 +117,8 @@
           @if (session('software_desautorizado'))
           <div class="alert alert-secondary">{!!session('software_desautorizado')!!}</div>
           @endif
-          <table class="table table-bordered table-responsive-md">
+          <div class="tabla-responsive">
+          <table class="table table-bordered">
             @if (count($softwares) > 0 )
               <thead class="table-dark">
                   <tr>
@@ -131,12 +134,12 @@
       
             @forelse ($softwares as $software)   
               <tr>
-                  <td>{{$software->user->name}}</td>
-                  <td>{{$software->nombre}}</td>
-                  <td>{{$software->status ? 'Autorizado' : 'No autorizado'}}</td>
-                  <td>{{$software->justificacion}}</td> 
+                  <td data-label="Usuario">{{$software->user->name}}</td>
+                  <td data-label="Software">{{$software->nombre}}</td>
+                  <td data-label="Estado">{{$software->status ? 'Autorizado' : 'No autorizado'}}</td>
+                  <td data-label="Justificación">{{$software->justificacion}}</td>
                   
-                  <td class="col-2">
+                  <td data-label="Autorizar" class="col-2">
                     <div class="btn-group">
                       <form action="{{route('autorizar.software.jefe', $software->id)}}" method="POST" class="autorisa_software">
                         @csrf @method('PATCH')                            
@@ -170,6 +173,7 @@
                 
             </tbody>
         </table>
+          </div>
       </div>  
 
 

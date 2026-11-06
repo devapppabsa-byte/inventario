@@ -12,6 +12,11 @@ class homeController extends Controller
 {
     public function index(){
 
+        // Un agente con sesion abierta no tiene nada que hacer en el login.
+        if (auth('soporte')->check()) {
+            return redirect()->route('soporte.index');
+        }
+
         return view('inicio');  
     }
 

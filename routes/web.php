@@ -17,6 +17,11 @@ use App\Http\Controllers\directorioController;
 use App\Http\Controllers\reaccionesController;
 use App\Http\Controllers\comentariosController;
 use App\Http\Controllers\publicacionesController;
+use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\AgenteSoporteAdminController;
+use App\Http\Controllers\adjuntosController;
+use App\Http\Controllers\EvaluacionesController;
+use App\Http\Controllers\EvaluacionesAdminController;
 
 
 //Rutas para ir a los dispositivos
@@ -55,10 +60,20 @@ Route::get('/admin/lista_dispositivos', [Controller::class, 'lista_dispositivos'
 
 //RESPUESTA A LOS PEDIDOS DE TINTAS
 
-Route::patch('/admin/respuesta/{id}', [tintasController::class, 'respuesta_admin'])->name('respuesta.admin');
+Route::patch('/admin/respuesta/{id}', [tintasController::class, 'respuesta_admin'])->name('respuesta.admin')->middleware('auth:admin');
 
 Route::get('/admin/reporte/{id}', [ticketsController::class, 'detalle_reporte_admin'])->name('detalle.reporte.admin')->middleware('auth:admin');
-Route::post('/admin/reporte/comentario/{id}', [ticketsController::class, 'comentario_admin'])->name('comentario.reporte.admin');
+Route::post('/admin/reporte/comentario/{id}', [ticketsController::class, 'comentario_admin'])->name('comentario.reporte.admin')->middleware('auth:admin');
+
+
+// Agentes de soporte: guard aparte, asi que no alcanzan ninguna ruta auth:admin.
+Route::middleware('auth:soporte')->group(function () {
+    Route::get('/soporte', [Controller::class, 'soporte_index'])->name('soporte.index');
+    Route::get('/soporte/reporte/exportar', [Controller::class, 'soporte_exportar'])->name('soporte.exportar');
+    Route::get('/soporte/reporte/{id}', [ticketsController::class, 'soporte_detalle_reporte'])->name('soporte.detalle');
+    Route::post('/soporte/reporte/comentario/{id}', [ticketsController::class, 'soporte_comentario'])->name('soporte.comentario');
+    Route::post('/soporte/cerrar_sesion', [Controller::class, 'soporte_cerrar_sesion'])->name('soporte.cerrar_sesion');
+});
 
 
 
@@ -75,9 +90,11 @@ Route::patch('/admin/configuracion/soporte', [Controller::class, 'config_soporte
 
 // Pedidos tintas sección admin
 Route::get('/admin/pedidos-tintas', [Controller::class, 'admin_pedidos_tintas'])->name('admin.pedidos.tintas')->middleware('auth:admin');
+Route::patch('/admin/pedidos-tintas/{id}/completar', [Controller::class, 'admin_pedido_completar'])->name('admin.pedidos.completar')->middleware('auth:admin');
 
 // Solicitudes de soporte sección admin
 Route::get('/admin/soporte', [Controller::class, 'admin_soporte'])->name('admin.soporte')->middleware('auth:admin');
+Route::get('/admin/soporte/exportar', [Controller::class, 'admin_soporte_exportar'])->name('admin.soporte.exportar')->middleware('auth:admin');
 
 //  Ingreso de usuarios
 
@@ -92,7 +109,11 @@ Route::patch('/admin/agregando_users/accesos/desautorizar_sitio/{id}', [accesosC
 
 //rutas para agregar a los usuarios
 Route::get('/admin/agregando_users', [Controller::class, 'show_formulario'])->name('agregar.usuarios')->middleware('auth:admin');
+
+
 Route::post('/agregando_users', [Controller::class, 'registrar_usuarios'])->name('registrar.usuarios')->middleware('auth:admin');
+Route::post('/agregando/usuarios/excel', [Controller::class, 'importar_usuarios_excel'])->name('usuarios.excel')->middleware('auth:admin');
+Route::get('/agregando/usuarios/plantilla', [Controller::class, 'descargar_plantilla_usuarios'])->name('usuarios.plantilla')->middleware('auth:admin');
 
 
 
@@ -151,6 +172,10 @@ Route::get('/user/tickets/detalles/{id}', [ticketsController::class, 'detalle_re
 
 Route::get('/user/tickets/imagen/{id}', [ticketsController::class, 'mostrar_imagen'])->name('reporte.imagen')->middleware('auth');
 
+// Evidencia de los reportes. Sin middleware a proposito: son tres guards distintos
+// (usuario, admin y agente) y el permiso se resuelve dentro del controlador.
+Route::get('/adjuntos/reporte/{id}', [adjuntosController::class, 'show'])->name('adjuntos.show');
+
 //Rutas que funcionan en el perfil de los usuarios
 Route::get('/user/home', [Controller::class, 'perfil_home'])->name('perfil.home')->middleware('auth');
 Route::get('/user/articles', [Controller::class, 'perfil_articles'])->name('perfil.articles')->middleware('auth');
@@ -159,11 +184,13 @@ Route::get('/user/dispositivos', [Controller::class, 'dispositivos_show'])->name
 Route::get('/user/tintas', [tintasController::class, 'show'])->name('tintas.show')->middleware('auth');
 Route::get('/user/tickets', [ticketsController::class, 'show'])->name('tickets.show')->middleware('auth');
 Route::post('/user/tintas/pedido', [tintasController::class, 'pedido'])->name('tintas.pedido')->middleware('auth');
+Route::post('/user/tintas/pedido/{id}/reenvio', [tintasController::class, 'reenviar_pedido'])->name('tintas.reenvio')->middleware('auth');
 Route::patch('/user/tintas/pedido/{id}', [tintasController::class, 'pedido_completo'])->name('pedido.completo')->middleware('auth');
 
 
 
 Route::post('/user/tickets/', [ticketsController::class, 'reporte'])->name('reporte.post');
+Route::post('/user/tickets/{id}/reenvio', [ticketsController::class, 'reenviar_reporte'])->name('reporte.reenvio')->middleware('auth');
 Route::patch('/user/tickets/{id}/completo', [ticketsController::class, 'reporte_completo'])->name('reporte.completo');
 Route::post('/user/tickets/comentario/{id}', [ticketsController::class, 'comentario_usuario'])->name('comentario.reporte.usuario');
 
@@ -221,3 +248,65 @@ Route::post('/user/home', [postUserController::class, 'postUser'])->name('post.u
 
 //rutas de los post en el muro
 
+
+
+// ============================================================
+// EVALUACIONES DE PROVEEDORES
+// ============================================================
+
+// ---- Panel Admin: Agentes de Soporte ----
+Route::get('/admin/soporte_agentes', [AgenteSoporteAdminController::class, 'index'])->name('admin.soporte.agentes')->middleware('auth:admin');
+Route::post('/admin/soporte_agentes', [AgenteSoporteAdminController::class, 'store'])->name('admin.soporte.agentes.store')->middleware('auth:admin');
+Route::patch('/admin/soporte_agentes/{id}', [AgenteSoporteAdminController::class, 'update'])->name('admin.soporte.agentes.update')->middleware('auth:admin');
+Route::patch('/admin/soporte_agentes/{id}/toggle', [AgenteSoporteAdminController::class, 'toggle'])->name('admin.soporte.agentes.toggle')->middleware('auth:admin');
+Route::delete('/admin/soporte_agentes/{id}', [AgenteSoporteAdminController::class, 'destroy'])->name('admin.soporte.agentes.destroy')->middleware('auth:admin');
+
+// ---- Panel Admin: Proveedores ----
+Route::get('/admin/proveedores', [ProveedorController::class, 'index'])->name('admin.proveedores')->middleware('auth:admin');
+Route::post('/admin/proveedores', [ProveedorController::class, 'store'])->name('admin.proveedores.store')->middleware('auth:admin');
+Route::patch('/admin/proveedores/{id}', [ProveedorController::class, 'update'])->name('admin.proveedores.update')->middleware('auth:admin');
+Route::patch('/admin/proveedores/{id}/toggle', [ProveedorController::class, 'toggle'])->name('admin.proveedores.toggle')->middleware('auth:admin');
+Route::delete('/admin/proveedores/{id}', [ProveedorController::class, 'destroy'])->name('admin.proveedores.destroy')->middleware('auth:admin');
+
+// ---- Panel Admin: Evaluaciones ----
+Route::get('/admin/evaluaciones', [EvaluacionesAdminController::class, 'index'])->name('admin.evaluaciones')->middleware('auth:admin');
+Route::get('/admin/evaluaciones/crear', [EvaluacionesAdminController::class, 'create'])->name('admin.evaluaciones.create')->middleware('auth:admin');
+Route::post('/admin/evaluaciones', [EvaluacionesAdminController::class, 'store'])->name('admin.evaluaciones.store')->middleware('auth:admin');
+
+Route::get('/admin/evaluaciones/{id}', [EvaluacionesAdminController::class, 'show'])->name('admin.evaluaciones.show')->middleware('auth:admin');
+
+Route::patch('/admin/evaluaciones/{id}', [EvaluacionesAdminController::class, 'update'])->name('admin.evaluaciones.update')->middleware('auth:admin');
+Route::patch('/admin/evaluaciones/{id}/toggle', [EvaluacionesAdminController::class, 'toggle'])->name('admin.evaluaciones.toggle')->middleware('auth:admin');
+Route::delete('/admin/evaluaciones/{id}', [EvaluacionesAdminController::class, 'destroy'])->name('admin.evaluaciones.destroy')->middleware('auth:admin');
+
+// Secciones
+Route::post('/admin/evaluaciones/{id}/secciones', [EvaluacionesAdminController::class, 'seccionStore'])->name('admin.secciones.store')->middleware('auth:admin');
+Route::patch('/admin/secciones/{id}', [EvaluacionesAdminController::class, 'seccionUpdate'])->name('admin.secciones.update')->middleware('auth:admin');
+Route::delete('/admin/secciones/{id}', [EvaluacionesAdminController::class, 'seccionDestroy'])->name('admin.secciones.destroy')->middleware('auth:admin');
+
+// Preguntas
+Route::post('/admin/secciones/{id}/preguntas', [EvaluacionesAdminController::class, 'preguntaStore'])->name('admin.preguntas.store')->middleware('auth:admin');
+Route::patch('/admin/preguntas/{id}', [EvaluacionesAdminController::class, 'preguntaUpdate'])->name('admin.preguntas.update')->middleware('auth:admin');
+Route::delete('/admin/preguntas/{id}', [EvaluacionesAdminController::class, 'preguntaDestroy'])->name('admin.preguntas.destroy')->middleware('auth:admin');
+
+// Opciones
+Route::post('/admin/preguntas/{id}/opciones', [EvaluacionesAdminController::class, 'opcionStore'])->name('admin.opciones.store')->middleware('auth:admin');
+Route::patch('/admin/opciones/{id}', [EvaluacionesAdminController::class, 'opcionUpdate'])->name('admin.opciones.update')->middleware('auth:admin');
+Route::delete('/admin/opciones/{id}', [EvaluacionesAdminController::class, 'opcionDestroy'])->name('admin.opciones.destroy')->middleware('auth:admin');
+
+// Proveedores asociados a evaluación
+Route::post('/admin/evaluaciones/{id}/proveedores', [EvaluacionesAdminController::class, 'proveedorAssociate'])->name('admin.evaluaciones.proveedores.associate')->middleware('auth:admin');
+Route::delete('/admin/evaluaciones/{evaluacionId}/proveedores/{proveedorId}', [EvaluacionesAdminController::class, 'proveedorDissociate'])->name('admin.evaluaciones.proveedores.dissociate')->middleware('auth:admin');
+
+// ---- Panel Admin: Resultados de evaluaciones ----
+Route::get('/admin/resultados/proveedores', [EvaluacionesAdminController::class, 'resultadosProveedores'])->name('admin.resultados.proveedores')->middleware('auth:admin');
+Route::get('/admin/resultados/intento/{intento}', [EvaluacionesAdminController::class, 'resultadoIntento'])->name('admin.resultados.intento')->middleware('auth:admin');
+
+// ---- Panel Usuario: Evaluaciones ----
+Route::get('/user/evaluaciones', [EvaluacionesController::class, 'misEvaluaciones'])->name('evaluaciones.mis')->middleware('auth');
+Route::get('/user/evaluaciones/{evaluacionId}/responder', [EvaluacionesController::class, 'responder'])->name('evaluaciones.responder')->middleware('auth');
+Route::get('/user/evaluaciones/{evaluacionId}/subencuesta/{seccionId}/responder', [EvaluacionesController::class, 'responderSeccion'])->name('evaluaciones.responderSeccion')->middleware('auth');
+Route::post('/user/evaluaciones/{evaluacionId}/iniciar', [EvaluacionesController::class, 'iniciar'])->name('evaluaciones.iniciar')->middleware('auth');
+Route::get('/user/evaluaciones/intento/{intentoId}', [EvaluacionesController::class, 'intento'])->name('evaluaciones.intento')->middleware('auth');
+Route::post('/user/evaluaciones/intento/{intentoId}/guardar', [EvaluacionesController::class, 'guardar'])->name('evaluaciones.guardar')->middleware('auth');
+Route::get('/user/evaluaciones/intento/{intentoId}/resultado', [EvaluacionesController::class, 'resultado'])->name('evaluaciones.resultado')->middleware('auth');

@@ -17,6 +17,14 @@ class Pedido extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function parent(){
+        return $this->belongsTo(Pedido::class, 'parent_id');
+    }
+
+    public function hijos(){
+        return $this->hasMany(Pedido::class, 'parent_id');
+    }
+
 
 
 }

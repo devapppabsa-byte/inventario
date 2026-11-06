@@ -5,7 +5,7 @@ use Carbon\Carbon;
 @extends('layout')
 @section('contenido')
 @section('title', 'Detalle reporte')
-@include('assets.nav')
+@include($navView ?? 'assets.nav')
 
 <div class="container mt-4">
     <div class="row justify-content-center">
@@ -15,7 +15,7 @@ use Carbon\Carbon;
                 <div class="row">
                     <div class="col-12 bg-dark p-3 text-center text-white">
                         <h2>Ticket #{{$reporte->id}}</h2> <br>
-                        <a class="text-white fw-bold" href="{{route('perfil.admin')}}">Volver</a> <br>
+                        <a class="text-white fw-bold" href="{{route($rutaVolver ?? 'admin.soporte')}}">Volver</a> <br>
                         @if (session('comentado'))
                             <small class="text-success">{{session('comentado')}}</small>
                         @endif
@@ -27,7 +27,7 @@ use Carbon\Carbon;
                 <div class="row">
                     <div class="col-12 bg-success p-3 text-center text-white">
                         <h2>Ticket #{{$reporte->id}}</h2>
-                        <a class="text-white fw-bold" href="{{route('perfil.admin')}}">Volver</a>
+                        <a class="text-white fw-bold" href="{{route($rutaVolver ?? 'admin.soporte')}}">Volver</a>
                     </div>
                 </div>
             @endif
@@ -37,6 +37,23 @@ use Carbon\Carbon;
 
                 <div class="col-6 p-3">
                     <div class="row">
+                        <div class="col-12 m-2">
+                            <b>Usuario: </b>
+                            <span>{{$reporte->user->name ?? 'Usuario eliminado'}}</span>
+                            @if ($reporte->user)
+                                @if ($reporte->user->puesto)
+                                    <small class="text-muted d-block">{{$reporte->user->puesto}}
+                                        @if ($reporte->user->planta) — Planta {{$reporte->user->planta}} @endif
+                                    </small>
+                                @endif
+                                <small class="text-muted d-block">
+                                    @if ($reporte->user->extension) <i class="fa fa-phone me-1"></i>Ext: {{$reporte->user->extension}} @endif
+                                    @if ($reporte->user->celular) <i class="fa fa-mobile me-1"></i>{{$reporte->user->celular}} @endif
+                                    @if ($reporte->user->correo) <i class="fa fa-envelope me-1"></i>{{$reporte->user->correo}} @endif
+                                </small>
+                            @endif
+                        </div>
+
                         <div class="col-12 m-2">
                             <b>Dispositivo: </b>
                             <span>{{$reporte->dispositivo}}</span>
@@ -52,8 +69,8 @@ use Carbon\Carbon;
                         @endif
     
                         <div class="col-12 m-2">
-                            <b>Descripción: </b> 
-                            <span>{{$reporte->descripcion}}.</span>
+                            <b>Descripción: </b>
+                            @include('partials._descripcion_enriquecida', ['descripcion' => $reporte->descripcion])
                         </div>
     
                         <div class="col-12 m-2">
@@ -66,9 +83,41 @@ use Carbon\Carbon;
                             <span>{{$reporte->prioridad}}</span>
                         </div>
 
-                        <div class="col-12">
-                            <img src="{{str_replace('Public/', '', Storage::url($reporte->img))}}"  data-bs-toggle="modal" data-bs-target="#img{{$reporte->id}}" class="img-fluid zoom" alt="">
+                        <div class="col-12 m-2">
+                            <b>Fecha de solución: </b>
+                            <span>{{($reporte->fecha_solucion && $reporte->fecha_solucion != 'pendiente') ? $reporte->fecha_solucion : '—'}}</span>
+                        </div>
 
+                        <div class="col-12 m-2">
+                            <b>Calificación: </b>
+                            @if ($reporte->calificacion)
+                                <span class="text-warning" title="Calificación: {{$reporte->calificacion}}/5">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <i class="fa {{ $i <= $reporte->calificacion ? 'fa-star' : 'fa-star-o' }}"></i>
+                                    @endfor
+                                </span>
+                                <small class="text-muted">({{$reporte->calificacion}}/5)</small>
+                            @else
+                                <span class="text-muted">Sin calificar</span>
+                            @endif
+                        </div>
+
+                        @if ($reporte->observaciones)
+                            <div class="col-12 m-2">
+                                <b>Observaciones del usuario: </b>
+                                <div class="border rounded p-2 mt-1 bg-light">{{$reporte->observaciones}}</div>
+                            </div>
+                        @endif
+
+                        @if ($reporte->detalles_solucion && $reporte->detalles_solucion != 'pendiente')
+                            <div class="col-12 m-2">
+                                <b>Detalles de la solución: </b>
+                                <span>{{$reporte->detalles_solucion}}</span>
+                            </div>
+                        @endif
+
+                        <div class="col-12">
+                            @include('partials._adjuntos_reporte', ['adjuntos' => $reporte->adjuntos])
                         </div>
 
 
@@ -82,7 +131,7 @@ use Carbon\Carbon;
                     <div class="row">
                         @forelse ($comentarios as $comentario)
                             <div class="col-12 my-4">
-                                <b class="font-size-18">{{($comentario->usuario == Auth::guard('admin')->user()->nombre) ? 'Yo' : $comentario->usuario }}: </b>
+                                <b class="font-size-18">{{($comentario->usuario == ($nombreAgente ?? null)) ? 'Yo' : $comentario->usuario }}: </b>
                                 <p class="mb-0">{{$comentario->comentario}}</p>
                                 <small class="fw-bold bd-highlight">{{Carbon::parse($comentario->created_at)->diffForHumans()}}</small>
                             </div>
@@ -92,11 +141,11 @@ use Carbon\Carbon;
 
                         @if ($reporte->status != 'completado')
                             <div class="col-12 mt-5 ">
-                                <form action="{{route('comentario.reporte.admin', $reporte->id)}}" method="POST">
+                                <form action="{{route($rutaComentario ?? 'comentario.reporte.admin', $reporte->id)}}" method="POST">
                                     @csrf
                                     <div class="mb-3">
                                         <i class="fa fa-comment"></i>
-                                        <b>{{Auth::guard('admin')->user()->nombre}}: </b>
+                                        <b>{{$nombreAgente ?? ''}}: </b>
                                         <textarea name="comentario" class="form-control w-100 h-25" autofocus></textarea>
                                         @error('comentario')
                                            <h6 class="mt-3 text-danger"> {{ $message}} </h6>
@@ -121,14 +170,6 @@ use Carbon\Carbon;
 
 {{-- aqui esta el modal --}}
   <!-- Modal -->
-  <div class="modal fade" id="img{{$reporte->id}}"  data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <img src="{{str_replace('Public/', '', Storage::url($reporte->img))}}" class="img-fluid" alt="">
-          </div>
-    </div>
-</div>
-
 
     
 @endsection

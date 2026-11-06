@@ -30,7 +30,7 @@
 
   
   <!-- encabezado -->
-  <div class="container px-5 py-2 ">
+  <div class="container px-3 px-md-5 py-2">
       <div class="row border border-5">
         
         <div class="col-sm-12 col-md-4  col-lg-4 centrar-verticalmente p-2 mt-2 text-center">
@@ -108,7 +108,7 @@
 
   {{-- conjunto de datos del usuario --}}
       <div class="row px-2">
-        <div class="col-12 text-center" style="background-color: rgb(213, 232, 226)">
+        <div class="col-12 text-center" style="background-color: #e9ecef">
           <h5 class="mt-2 fw-bold">Datos del Usuario</h5>
         </div>
       </div>
@@ -141,7 +141,7 @@
   @forelse ($computadoras as $computadora)
 
       <div class="row mt-4 px-2 border-top border-bottom">
-        <div class="col-9 text-center" style="background-color: rgb(244, 233, 223)">
+        <div class="col-9 text-center" style="background-color: #f5f5f5">
           <h5 class="mt-2 fw-bold">Datos del Equipo de Cómputo</h5>
         </div>
         <div class="col-3 mt-2">
@@ -307,7 +307,7 @@
   @forelse ($impresoras as $impresora)
       
     <div class="row mt-4 px-2 border-top border-bottom">
-      <div class="col-9 text-center" style="background-color: rgb(213, 232, 226)">
+      <div class="col-9 text-center" style="background-color: #e9ecef">
         <h5 class="mt-2 fw-bold">Datos del Equipo de Impresora</h5>
       </div>
 
@@ -425,7 +425,7 @@
   @forelse ($telefonos as $telefono)
       
   <div class="row mt-4 px-2 border-top border-bottom">
-    <div class="col-9 text-center" style="background-color: rgb(244, 233, 223)">
+    <div class="col-9 text-center" style="background-color: #f5f5f5">
       <h5 class="mt-2 fw-bold">Datos del Equipo de el Teléfono</h5>
     </div>
     <div class="col-3 mt-2">

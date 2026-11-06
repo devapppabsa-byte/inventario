@@ -18,6 +18,7 @@
 
         <div class="col-10  bg-white p-0">
             <h2 class="p-3 fw-bold bg-dark text-white">Publicaciones realizadas</h2>
+            <div class="tabla-responsive">
             <table class="table">
                 <thead>
                   <tr class="text-uppercase">
@@ -31,13 +32,13 @@
 
                   @forelse ($publicaciones as $publicacion)
                     <tr>
-                      <th>{{$publicacion->titulo}}</th>
-                      <td>{{$publicacion->created_at}}</td>
-                      <td class="text-underline"> 
+                      <th data-label="Titulo">{{$publicacion->titulo}}</th>
+                      <td data-label="Fecha">{{$publicacion->created_at}}</td>
+                      <td data-label="Autor" class="text-underline">
                         <i class="fa fa-pencil mx-2"></i>
                         {{$publicacion->autor}}
                       </td>
-                      <td>
+                      <td data-label="Acciones">
                         <div class="btn-group">
                           <button class="btn btn-danger">
                             <i class="fa fa-eraser"></i>
@@ -54,6 +55,7 @@
                   
                 </tbody>
               </table>
+            </div>
         </div>
     </div>
 
@@ -65,6 +67,7 @@
       </div>
         <div class="col-10 bg-white">
 
+          <div class="tabla-responsive">
           <table class="table">
             <thead>
               <tr>
@@ -79,16 +82,17 @@
 
               @forelse ($visitas as $visita)
               <tr>
-                <th scope="row">{{$visita->id}}</th>
-                <td>{{$visita->user->name}}</td>
-                <td>{{$visita->publicacion->titulo}}</td>
-                <td>{{$visita->created_at}}</td>
+                <th data-label="#" scope="row">{{$visita->id}}</th>
+                <td data-label="Usuario">{{$visita->user->name}}</td>
+                <td data-label="Publicacion">{{$visita->publicacion->titulo}}</td>
+                <td data-label="Fecha">{{$visita->created_at}}</td>
               </tr>
               @empty
               @endforelse
 
             </tbody>
           </table>              
+          </div>
         </div>
     </div>
 

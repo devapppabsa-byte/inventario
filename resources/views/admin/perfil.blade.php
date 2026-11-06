@@ -40,6 +40,26 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="card border shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fa fa-headset fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title fw-bold">Agentes de Soporte</h5>
+                            <p class="card-text text-muted">Alta, edición y baja de agentes</p>
+                            <a href="{{route('admin.soporte.agentes')}}" class="btn btn-warning">Gestionar</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fa fa-truck fa-3x text-dark mb-3"></i>
+                            <h5 class="card-title fw-bold">Evaluación de Proveedores</h5>
+                            <p class="card-text text-muted">Gestionar proveedores y evaluaciones</p>
+                            <a href="{{route('admin.proveedores')}}" class="btn btn-dark">Gestionar</a>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
