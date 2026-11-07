@@ -127,6 +127,10 @@ public function intentosEvaluacion(){
     return $this->hasMany(EvaluacionIntento::class, 'usuario_id');
 }
 
+public function asistenteMensajes(){
+    return $this->hasMany(AsistenteMensaje::class);
+}
+
 
 
 
